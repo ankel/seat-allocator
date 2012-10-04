@@ -19,7 +19,6 @@ namespace Seat_Allocator
     {
         public int size;
         public int[,] h;
-        public int[] chart;
 
         public void Display()
         {
@@ -54,7 +53,10 @@ namespace Seat_Allocator
             }
             file.Close();
         }
-
+        /// <summary>
+        /// print current seating configuration into a file
+        /// </summary>
+        /// <param name="path">output file path</param>
         public void PrintFile(string path)
         {
             System.IO.StreamWriter file = new System.IO.StreamWriter(path);
@@ -72,6 +74,12 @@ namespace Seat_Allocator
             file.Close();
         }
 
+        /// <summary>
+        /// UNTESTED - automatically generate a seating info using size and OVERIDE the current seating info
+        /// </summary>
+        /// <param name="Size">new size</param>
+        /// <param name="path">path to the file</param>
+        /// <param name="overide">true to overide, otherwise it'll throw an error</param>
         public void Gen(int Size, string path, bool overide)
         {
             if (h != null && overide == false)
@@ -92,24 +100,34 @@ namespace Seat_Allocator
             }
         }
 
+        /// <summary>
+        /// Check if a given num is of a female or a male. Throw exception if number is less than 1 or bigger than size
+        /// </summary>
+        /// <param name="num">number to check</param>
+        /// <returns>1 if female, -1 if male</returns>
         public int IsF(int num)
         {
             if (1 <= num && num <= (this.size / 2))
             {
                 return 1;
             }
-            if (this.size / 2 < num && num <= this.size)
+            else if (this.size / 2 < num && num <= this.size)
             {
                 return -1;
+            }
+            else
+            {
+                throw new Exception("Number is incorrect");
             }
         }
 
         /// <summary>
         /// Check the adjacent pair score between (seat) and (seat-1)
         /// </summary>
-        /// <param name="seat"> the seat to look at</param>
+        /// <param name="seat">the seat to look at</param>
+        /// <param name="chart">the seating chart</param>
         /// <returns>score of the pair</returns>
-        public int AdjacentScore(int seat)
+        public int AdjacentScore(int seat, int[] chart)
         {
             int current = chart[seat];
             int adjacent = chart[seat - 1];
@@ -118,7 +136,13 @@ namespace Seat_Allocator
             return score;
         }
 
-        public int OppositeScore(int seat)
+        /// <summary>
+        /// Check the opposite pair score between (seat) and (size / 2 + seat)
+        /// </summary>
+        /// <param name="seat">the seat to look at</param>
+        /// <param name="chart">the seating chart</param>
+        /// <returns>score of the pair</returns>
+        public int OppositeScore(int seat, int[] chart)
         {
             int current = chart[seat];
             int opposite = chart[size / 2 + seat];
@@ -127,23 +151,19 @@ namespace Seat_Allocator
             return score;
         }
 
-        public int Score()
+        /// <summary>
+        /// Grade a seating chart based on current size and h
+        /// </summary>
+        /// <param name="chart">the seating chart</param>
+        /// <returns>total score</returns>
+        public int Score(int[] chart)
         {
-            int score = 0;
-            int first = 1;
-            int firstOpposite = size / 2 + 1;
-            if (IsF(chart[first]) * IsF(firstOpposite) < 0)
+            int score = OppositeScore(1, chart);
+            for (int i = 2; i <= size / 2; ++i)
             {
-                score += 2;
-            }
-            score += h[chart[first], chart[firstOpposite]] + h[chart[firstOpposite], chart[first]];
-
-            for (int i = 2; i < firstOpposite; ++i)
-            {
-
-            }
-
-
+                score += AdjacentScore(i, chart) + AdjacentScore(size / 2 + i, chart);
+                score += OppositeScore(i, chart);
+            }            
             return score;
         }
     }
