@@ -20,12 +20,15 @@ namespace Seat_Allocator
         public int size;
         public int[,] h;
 
+        /// <summary>
+        /// Display seating info onto console
+        /// </summary>
         public void Display()
         {
             Console.WriteLine(size);
-            for (int i = 0; i < size; ++i)
+            for (int i = 1; i <= size; ++i)
             {
-                for (int j = 0; j < size; ++j)
+                for (int j = 1; j <= size; ++j)
                 {
                     Console.Write(h[i, j] + " ");
                 }
@@ -33,12 +36,16 @@ namespace Seat_Allocator
             }
         }
 
+        /// <summary>
+        /// Read seating information from file
+        /// </summary>
+        /// <param name="path">file to read from</param>
         public void ReadFile(string path)
         {
             System.IO.StreamReader file = new System.IO.StreamReader(path);
             size = Convert.ToInt32(file.ReadLine());
 
-            h = new int[size + 1,size + 1];
+            h = new int[size + 1,size + 1];         // additional space for heuristic information
 
             string[] s;
             for (int i = 1; i <= size; ++i)
@@ -48,7 +55,7 @@ namespace Seat_Allocator
                     throw new Exception("File malformat at line " + (i + 2));
                 for (int j = 1; j <= size; ++j)
                 {
-                    h[i, j] = Convert.ToInt32(s[j]);
+                    h[i, j] = Convert.ToInt32(s[j - 1]);
                 }
             }
             file.Close();
@@ -63,9 +70,9 @@ namespace Seat_Allocator
 
             file.WriteLine(this.size);
 
-            for (int i = 0; i < size; ++i)
+            for (int i = 1; i <= size; ++i)
             {
-                for (int j = 0; j < size; ++j)
+                for (int j = 1; j <= size; ++j)
                 {
                     file.Write(h[i, j] + " ");
                 }
@@ -78,22 +85,20 @@ namespace Seat_Allocator
         /// UNTESTED - automatically generate a seating info using size and OVERIDE the current seating info
         /// </summary>
         /// <param name="Size">new size</param>
-        /// <param name="path">path to the file</param>
-        /// <param name="overide">true to overide, otherwise it'll throw an error</param>
-        public void Gen(int Size, string path, bool overide)
+        public void Gen(int Size)
         {
-            if (h != null && overide == false)
+            if (h != null)
             {
                 throw new Overiding();
             }
 
             this.size = Size;
-            h = new int[size, size];
+            h = new int[size + 1, size + 1];
             Random rand = new Random();
 
-            for (int i = 0; i < size; ++i)
+            for (int i = 1; i <= size; ++i)
             {
-                for (int j = 0; j < size; ++j)
+                for (int j = 1; j <= size; ++j)
                 {
                     h[i, j] = rand.Next(-20, 20);
                 }
@@ -163,7 +168,7 @@ namespace Seat_Allocator
             {
                 score += AdjacentScore(i, chart) + AdjacentScore(size / 2 + i, chart);
                 score += OppositeScore(i, chart);
-            }            
+            }
             return score;
         }
     }
