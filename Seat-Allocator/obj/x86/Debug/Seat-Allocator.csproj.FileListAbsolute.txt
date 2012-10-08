@@ -1,5 +1,0 @@
-N:\AI\Seat-Allocator\Seat-Allocator\bin\Debug\Seat-Allocator.exe
-N:\AI\Seat-Allocator\Seat-Allocator\bin\Debug\Seat-Allocator.pdb
-N:\AI\Seat-Allocator\Seat-Allocator\obj\x86\Debug\ResolveAssemblyReference.cache
-N:\AI\Seat-Allocator\Seat-Allocator\obj\x86\Debug\Seat-Allocator.exe
-N:\AI\Seat-Allocator\Seat-Allocator\obj\x86\Debug\Seat-Allocator.pdb
