@@ -23,13 +23,15 @@ The data is given to you in the form of an ASCII text file that has the even num
 
 The output should be a score, then a series of n rows, each with a person number, then a space, then a seat number.
 
-=================================================================================================================================================================================
+=================================================================================================================================================================
 
 Write up
 
 First I tried to code the complete search. The code is fairly simple, but heuristic in complete search doesn't help as much as I'd hoped for: since the space is discreet and not continuous, a carefully crafted test case will trip it easily. However it works farily well with 10-person case. 11 is a strech and it doesn't run very well beyond that.
 
-Coding a local search w/ random factor is another fairly simple task. The code uses system time accurate to milisecond to determine whether it'll do a "good" move or a random move, but it keeps track of how many time a move (any move) result in a "better" result or not. If this happens more than 100 times consecutively, then it resets the process. The result is pretty good: of every run I've tried, it managed to get the best result fron the 10-person test most of the time and results within 10~15% of each other with the 30-person test.
+Coding a local search w/ random factor is another way to do it. First it initialize a random configuration and then search within the neighbour of the configuration (swapping 2 people) for a better result. The code uses system time's milisecond(even or odd) to determine whether it'll do a "good" move or a random move, but it keeps track of how many time a move (any move) result in a "better" result or not. If this happens more than 100 times consecutively, then it resets the process by reinitialize another random seating. The result is pretty good: of every run I've tried, it managed to get the best result fron the 10-person test some time and results within 10~15% of each other with the 30-person test.
+
+I also tried the annealing method. For this one I actually managed to not be sloppy and code a separate class for storing the seating configuration (instead of using a simple array only). The annealing doesn't give very good result I'm afraid: it never managed to find our the best result in the 10-person, highest so far was 94, with average around 70~80. My assumption is that annealing doesn't have enough entropy compare to local search: only 1 initial random seating vs upward 1.5 million resets in local search. Moreover, the random/good move ratio is less than 50/50: due to the geometric nature of the temperature function, the program spends more time in low temperature than high temperature, and thus spends more time making good moves than random move; my local search uses system time even/odd-ness and can be "hand-wavy" shown to be approximately 50/50 ratio.
 
 Finally I incorporated an "auto" mode that choose the most suitable method based on the size of the test. A seatiing info generator is also written for testing purpose, but it's fairly useless as far as making sure I got a good solution (since verifying the correct solution requires complete search, which takes too long anyway).
 

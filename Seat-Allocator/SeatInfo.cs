@@ -19,6 +19,8 @@ namespace Seat_Allocator
     {
         public int size;
         public int[,] h;
+        public int[,] adjScore;
+        public int[,] oppScore;
 
         /// <summary>
         /// Display seating info onto console
@@ -59,6 +61,8 @@ namespace Seat_Allocator
                 }
             }
             file.Close();
+            AdjacentGen();
+            OppositeGen();
         }
         /// <summary>
         /// print current seating configuration into a file
@@ -103,6 +107,8 @@ namespace Seat_Allocator
                     h[i, j] = rand.Next(-20, 20);
                 }
             }
+            AdjacentGen();
+            OppositeGen();
         }
 
         /// <summary>
@@ -157,17 +163,58 @@ namespace Seat_Allocator
         }
 
         /// <summary>
+        /// Generate the adjacent score array
+        /// </summary>
+        private void AdjacentGen()
+        {
+            if (size == 0)
+            {
+                throw new Exception("Size not initialized");
+            }
+
+            adjScore = new int[size + 1, size + 1];
+            for (int i = 1; i <= size; ++i)
+            {
+                for (int j = 1; j < size; ++j)
+                {
+                    int score = (IsF(i) * IsF(j)) < 0 ? 1 : 0;
+                    score += h[i, j] + h[j, i];
+                    adjScore[i, j] = adjScore[j, i] = score;
+                }
+            }
+        }
+
+        private void OppositeGen()
+        {
+            if (size == 0)
+            {
+                throw new Exception("Size not initialized");
+            }
+
+            oppScore = new int[size + 1, size + 1];
+            for (int i = 1; i <= size; ++i)
+            {
+                for (int j = 1; j <= size; ++j)
+                {
+                    int score = (IsF(i) * IsF(j)) < 0 ? 2 : 0;
+                    score += h[i, j] + h[j, i];
+                    oppScore[i, j] = oppScore[j, i] = score;
+                }
+            }
+        }
+
+        /// <summary>
         /// Grade a seating chart based on current size and h
         /// </summary>
         /// <param name="chart">the seating chart</param>
         /// <returns>total score</returns>
         public int Score(int[] chart)
         {
-            int score = OppositeScore(1, chart);
+            int score = oppScore[chart[1],chart[size / 2]];
             for (int i = 2; i <= size / 2; ++i)
             {
-                score += AdjacentScore(i, chart) + AdjacentScore(size / 2 + i, chart);
-                score += OppositeScore(i, chart);
+                score += adjScore[chart[i], chart[i - 1]] + adjScore[chart[size / 2 + i], chart[size / 2 + i - 1]];
+                score += oppScore[i, size / 2 + i];
             }
             return score;
         }

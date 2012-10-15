@@ -102,7 +102,7 @@ namespace Seat_Allocator
         static void StochasticSearch(SeatInfo si)
         {
             DateTime due = DateTime.Now.AddMinutes(1);
-
+            System.IO.StreamWriter debug = new System.IO.StreamWriter(@"..\..\debug.txt");
             int[] temp = AssignRandomSeat(si.size);
             int tempScore = si.Score(temp);
             DateTime t = DateTime.Now;
@@ -145,10 +145,11 @@ namespace Seat_Allocator
                 {
                     temp = AssignRandomSeat(si.size);
                     tempScore = si.Score(temp);
+                    debug.WriteLine("Resetted!");
                 }
-
                 t = DateTime.Now;
             }
+            debug.Close();
         }
 
         /// <summary>
@@ -220,19 +221,25 @@ namespace Seat_Allocator
         /// </summary>
         /// <param name="p">number to total people</param>
         /// <returns>an array represent the random seating scheme</returns>
-        private static int[] AssignRandomSeat(int p)
+        public static int[] AssignRandomSeat(int p)
         {
             int[] ret = new int[p + 1];
             int j;
             Random rand = new Random();
             for (int i = 1; i <= p; ++i)
             {
-                do
-                {
-                    j = rand.Next(1, p + 1);
-                } while (!Check(ret, i, j));
-                ret[i] = j;
+                ret[i] = i;
             }
+
+            for (int i = 1; i <= p; ++i)
+            {
+                j = rand.Next(p + 1);
+                if (i != j)
+                {
+                    Swap(ref ret, i, j);
+                }
+            }
+
             return ret;
         }
 
@@ -244,7 +251,8 @@ namespace Seat_Allocator
             {
                 Console.WriteLine("Argument: ");
                 Console.WriteLine("c <file>: complete space state search using seating info from <file>");
-                Console.WriteLine("s <file>: stochastic search using seating info from <file>");
+                Console.WriteLine("l <file>: local search using seating info from <file>");
+                Console.WriteLine("s <file>: stimulated annealing using seating info from <file>");
                 Console.WriteLine("a <file>: auto mode. Will try the most suitable search method");
                 return;
             }
@@ -259,31 +267,35 @@ namespace Seat_Allocator
                 case "c":
                     Console.Write("Complete search...");
                     CompleteSearch(si);
-                    Console.WriteLine(" finished!");
                     break;
-                case "s":
+                case "l":
                     Console.Write("Local search... ");
                     StochasticSearch(si);
-                    Console.WriteLine(" finished!");
+                    break;
+                case "s":
+                    Console.WriteLine("Stimulated annealing... ");
+                    Annealing sa = new Annealing(si);
+                    SeatingChart sc = sa.Anneal();
+                    Array.Copy(sc.chart, chart, sc.size + 1);
+                    score = sc.score;
                     break;
                 case "a":
                     if (si.size <= 11)
                     {
                         Console.Write("Complete search...");
                         CompleteSearch(si);
-                        Console.WriteLine(" finished!");
                     }
                     else
                     {
                         Console.Write("Local search... ");
                         StochasticSearch(si);
-                        Console.WriteLine(" finished!");
                     }
                     break;
                 default:
                     Console.WriteLine("Argument: ");
                     Console.WriteLine("c <file>: complete space state search using seating info from <file>");
-                    Console.WriteLine("s <file>: stochastic search using seating info from <file>");
+                    Console.WriteLine("l <file>: local search using seating info from <file>");
+                    Console.WriteLine("s <file>: stimulated annealing using seating info from <file>");
                     Console.WriteLine("a <file>: auto mode. Will try the most suitable search method");
                     return;
             }

@@ -3,14 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seat-Allocator", "Seat-Allocator\Seat-Allocator.csproj", "{4031EA8F-13D9-415D-A3A6-5B9D074CAC62}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C34B1F56-6B83-4FE4-BD3E-0C358BF5D4E9}"
-	ProjectSection(SolutionItems) = preProject
-		Local.testsettings = Local.testsettings
-		Performance1.psess = Performance1.psess
-		Seat-Allocator1.vsmdi = Seat-Allocator1.vsmdi
-		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Seat-Allocator1.vsmdi
